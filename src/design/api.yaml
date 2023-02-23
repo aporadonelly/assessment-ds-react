@@ -1,94 +1,94 @@
 openapi: 3.0.0
 info:
-  title: Remote Parent-Teacher Conference API
-  description: API for remote parent-teacher conferences
+  title: Remote Teacher-Parent Conferences System API
+  description: An API for remote teacher-parent conferences system
   version: 1.0.0
-
 servers:
   - url: http://localhost:8000
-    description: Local development server
-
 paths:
-  /conference:
+  /login:
     post:
-      summary: Sign in to waiting queue of the conference
-      operationId: signInConference
+      summary: Sign in to the waiting queue of the conference
+      description: A login page that guides parents through the steps to join the waiting queue
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignInRequest'
+              type: object
+              properties:
+                homeroom:
+                  type: string
+                  description: Homeroom class name (e.g. 1A, 1B, 2A, 2B, 2C)
+                studentNumber:
+                  type: integer
+                  description: Homeroom number of the student involved
+                picture1:
+                  type: string
+                  format: binary
+                  description: Picture of the first associated noun
+                picture2:
+                  type: string
+                  format: binary
+                  description: Picture of the second associated noun
+              required:
+                - homeroom
+                - studentNumber
+                - picture1
+                - picture2
       responses:
         '200':
-          description: OK
+          description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WaitingQueueResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating the success of the login
+                  queueNumber:
+                    type: integer
+                    description: The position of the parent in the waiting queue
         '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating the reason for the bad request
+  /waiting-queue:
+    get:
+      summary: Check the waiting queue status
+      description: A waiting queue page that indicates the conference will start soon
+      responses:
+        '200':
+          description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating the status of the waiting queue
+                  expectedStartTime:
+                    type: string
+                    format: date-time
+                    description: The expected start time of the conference
+                  position:
+                    type: integer
+                    description: The position of the parent in the waiting queue
         '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-components:
-  schemas:
-    SignInRequest:
-      type: object
-      properties:
-        homeroom:
-          type: string
-          description: The homeroom class name (1A, 1B, 2A, 2B, 2C …)
-          example: "1A"
-        studentNumber:
-          type: integer
-          description: The homeroom number of the student involved (1, 2, 3…)
-          example: 1
-        pictures:
-          type: array
-          items:
-            type: string
-          description: The 2 associated nouns for the conference
-          example: ["banana", "horse"]
-      required:
-        - homeroom
-        - studentNumber
-        - pictures
-
-    WaitingQueueResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: A message indicating that the user has successfully signed in to the waiting queue
-          example: "You have successfully signed in to the waiting queue of the conference."
-
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: A message indicating the error that occurred
-          example: "Invalid information provided."
-
-
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating that the waiting queue is not found
