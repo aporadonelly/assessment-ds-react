@@ -1,0 +1,94 @@
+openapi: 3.0.0
+info:
+  title: Remote Parent-Teacher Conference API
+  description: API for remote parent-teacher conferences
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /conference:
+    post:
+      summary: Sign in to waiting queue of the conference
+      operationId: signInConference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitingQueueResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    SignInRequest:
+      type: object
+      properties:
+        homeroom:
+          type: string
+          description: The homeroom class name (1A, 1B, 2A, 2B, 2C …)
+          example: "1A"
+        studentNumber:
+          type: integer
+          description: The homeroom number of the student involved (1, 2, 3…)
+          example: 1
+        pictures:
+          type: array
+          items:
+            type: string
+          description: The 2 associated nouns for the conference
+          example: ["banana", "horse"]
+      required:
+        - homeroom
+        - studentNumber
+        - pictures
+
+    WaitingQueueResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A message indicating that the user has successfully signed in to the waiting queue
+          example: "You have successfully signed in to the waiting queue of the conference."
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A message indicating the error that occurred
+          example: "Invalid information provided."
+
+
